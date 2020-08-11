@@ -3614,12 +3614,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailsender",
   data: function data() {
     return {
       subject: "",
-      textarea: "",
+      messages: "",
       file: null,
       csvdetails: [],
       csvheader: [],
@@ -3637,22 +3642,34 @@ __webpack_require__.r(__webpack_exports__);
     newtext: function newtext() {
       var _this = this;
 
-      this.newstring = [];
-      var s = this.smstext;
+      this.newstringemail = [];
+      var s = this.subject;
+      var m = this.messages;
       var r = /\{.*?\}/g;
 
       var _loop = function _loop(i) {
-        var add = _this.csvdetails[i];
-        var newstring = s.replace(r, function (match) {
+        var add = _this.csvdetails[i]; //getsubject
+
+        var subject = s.replace(r, function (match) {
+          return add[match.split(" ")[1]];
+        }); //getmessage
+
+        var message = m.replace(r, function (match) {
           return add[match.split(" ")[1]];
         });
+        var valudetails = {
+          subject: subject,
+          message: message
+        };
 
-        _this.newstringemail.push(newstring);
+        _this.newstringemail.push(valudetails);
       };
 
       for (var i = 0; i < this.csvdetails.length; i++) {
         _loop(i);
       }
+
+      console.log("newsms", this.newstringemail);
     },
     getsmstext: function getsmstext() {
       this.newtext();
@@ -100415,11 +100432,11 @@ var render = function() {
                       size: "medium"
                     },
                     model: {
-                      value: _vm.textarea,
+                      value: _vm.messages,
                       callback: function($$v) {
-                        _vm.textarea = $$v
+                        _vm.messages = $$v
                       },
-                      expression: "textarea"
+                      expression: "messages"
                     }
                   }),
                   _vm._v(" "),
@@ -100427,7 +100444,8 @@ var render = function() {
                     "el-button",
                     {
                       staticClass: "aligntop",
-                      attrs: { size: "medium", type: "primary" }
+                      attrs: { size: "medium", type: "primary" },
+                      on: { click: _vm.getsmstext }
                     },
                     [_vm._v("Send Email")]
                   )
@@ -100500,7 +100518,7 @@ var render = function() {
                     data: _vm.newstringemail.filter(function(data) {
                       return (
                         !_vm.search ||
-                        data.name
+                        data.subject
                           .toLowerCase()
                           .includes(_vm.search.toLowerCase())
                       )
@@ -100509,11 +100527,11 @@ var render = function() {
                 },
                 [
                   _c("el-table-column", {
-                    attrs: { label: "Subject", prop: "date" }
+                    attrs: { label: "Subject", prop: "subject" }
                   }),
                   _vm._v(" "),
                   _c("el-table-column", {
-                    attrs: { label: "Message", prop: "name" }
+                    attrs: { label: "Message", prop: "message" }
                   }),
                   _vm._v(" "),
                   _c("el-table-column", { attrs: { align: "right" } })

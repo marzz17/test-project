@@ -29,11 +29,16 @@
                 maxlength="1500"
                 show-word-limit
                 placeholder="Compose Message"
-                v-model="textarea"
+                v-model="messages"
                 size="medium"
               />
 
-              <el-button class="aligntop" size="medium" type="primary">Send Email</el-button>
+              <el-button
+                @click="getsmstext"
+                class="aligntop"
+                size="medium"
+                type="primary"
+              >Send Email</el-button>
             </div>
           </div>
         </el-card>
@@ -59,11 +64,11 @@
       <div class="col-md-12">
         <el-card class="box-card">
           <el-table
-            :data="newstringemail.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+            :data="newstringemail.filter(data => !search || data.subject.toLowerCase().includes(search.toLowerCase()))"
             style="width: 100%"
           >
-            <el-table-column label="Subject" prop="date"></el-table-column>
-            <el-table-column label="Message" prop="name"></el-table-column>
+            <el-table-column label="Subject" prop="subject"></el-table-column>
+            <el-table-column label="Message" prop="message"></el-table-column>
             <el-table-column align="right">
               <!-- <template slot="header" slot-scope="scope">
                 <el-input v-model="search" size="mini" placeholder="Type to search" />
@@ -82,7 +87,7 @@ export default {
   data() {
     return {
       subject: "",
-      textarea: "",
+      messages: "",
       file: null,
       csvdetails: [],
       csvheader: [],
@@ -98,17 +103,28 @@ export default {
       this.getexcelfiledetails();
     },
     newtext() {
-      this.newstring = [];
-      let s = this.smstext;
+      this.newstringemail = [];
+      let s = this.subject;
+      let m = this.messages;
       let r = /\{.*?\}/g;
       for (let i = 0; i < this.csvdetails.length; i++) {
         const add = this.csvdetails[i];
-        let newstring = s.replace(r, function(match) {
+        //getsubject
+        let subject = s.replace(r, function(match) {
+          return add[match.split(" ")[1]];
+        });
+        //getmessage
+        let message = m.replace(r, function(match) {
           return add[match.split(" ")[1]];
         });
 
-        this.newstringemail.push(newstring);
+        let valudetails = {
+          subject: subject,
+          message: message
+        };
+        this.newstringemail.push(valudetails);
       }
+      console.log("newsms", this.newstringemail);
     },
     getsmstext() {
       this.newtext();
