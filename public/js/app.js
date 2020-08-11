@@ -3619,6 +3619,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailsender",
   data: function data() {
@@ -3658,6 +3659,7 @@ __webpack_require__.r(__webpack_exports__);
           return add[match.split(" ")[1]];
         });
         var valudetails = {
+          recipient: _this.csvdetails[i]["email"],
           subject: subject,
           message: message
         };
@@ -3668,8 +3670,6 @@ __webpack_require__.r(__webpack_exports__);
       for (var i = 0; i < this.csvdetails.length; i++) {
         _loop(i);
       }
-
-      console.log("newsms", this.newstringemail);
     },
     getsmstext: function getsmstext() {
       this.newtext();
@@ -100526,6 +100526,10 @@ var render = function() {
                   }
                 },
                 [
+                  _c("el-table-column", {
+                    attrs: { label: "Recipient", prop: "recipient" }
+                  }),
+                  _vm._v(" "),
                   _c("el-table-column", {
                     attrs: { label: "Subject", prop: "subject" }
                   }),

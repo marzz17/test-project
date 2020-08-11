@@ -67,6 +67,7 @@
             :data="newstringemail.filter(data => !search || data.subject.toLowerCase().includes(search.toLowerCase()))"
             style="width: 100%"
           >
+            <el-table-column label="Recipient" prop="recipient"></el-table-column>
             <el-table-column label="Subject" prop="subject"></el-table-column>
             <el-table-column label="Message" prop="message"></el-table-column>
             <el-table-column align="right">
@@ -119,12 +120,12 @@ export default {
         });
 
         let valudetails = {
+          recipient: this.csvdetails[i]["email"],
           subject: subject,
           message: message
         };
         this.newstringemail.push(valudetails);
       }
-      console.log("newsms", this.newstringemail);
     },
     getsmstext() {
       this.newtext();
