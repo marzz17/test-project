@@ -3618,11 +3618,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailsender",
   data: function data() {
@@ -100425,7 +100420,7 @@ var render = function() {
                       type: "text",
                       placeholder: "Subject",
                       clearable: "",
-                      size: "medium"
+                      size: "mini"
                     },
                     model: {
                       value: _vm.subject,
@@ -100444,7 +100439,7 @@ var render = function() {
                       maxlength: "1500",
                       "show-word-limit": "",
                       placeholder: "Compose Message",
-                      size: "medium"
+                      size: "mini"
                     },
                     model: {
                       value: _vm.messages,
@@ -100460,7 +100455,7 @@ var render = function() {
                     {
                       staticClass: "aligntop",
                       attrs: {
-                        size: "medium",
+                        size: "small",
                         type: "primary",
                         loading: _vm.sendemailloading
                       },
@@ -100509,21 +100504,21 @@ var render = function() {
               ),
               _vm._v(" "),
               _vm._l(_vm.csvheader, function(item, key, index) {
-                return _c("div", { key: index }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary headervariable btn-sm",
-                      attrs: {
-                        type: "button",
-                        draggable: "true",
-                        size: "sm",
-                        id: index
-                      }
-                    },
-                    [_vm._v(_vm._s("{ " + item + " }"))]
-                  )
-                ])
+                return _c(
+                  "button",
+                  {
+                    key: index,
+                    staticClass: "btn btn-primary headervariable btn-sm",
+                    staticStyle: { margin: "0 5px 5px 0" },
+                    attrs: {
+                      type: "button",
+                      draggable: "true",
+                      size: "sm",
+                      id: index
+                    }
+                  },
+                  [_vm._v(_vm._s("{ " + item + " }"))]
+                )
               })
             ],
             2

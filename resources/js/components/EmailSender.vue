@@ -9,13 +9,7 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <el-input
-                type="text"
-                placeholder="Subject"
-                v-model="subject"
-                clearable
-                size="medium"
-              />
+              <el-input type="text" placeholder="Subject" v-model="subject" clearable size="mini" />
               <el-input
                 class="aligntop"
                 type="textarea"
@@ -24,13 +18,13 @@
                 show-word-limit
                 placeholder="Compose Message"
                 v-model="messages"
-                size="medium"
+                size="mini"
               />
 
               <el-button
                 @click="getsmstext"
                 class="aligntop"
-                size="medium"
+                size="small"
                 type="primary"
                 :loading="sendemailloading"
               >Send Email</el-button>
@@ -51,15 +45,16 @@
               style="float: right; width:200px"
             />
           </div>
-          <div v-for="(item, key,index) in csvheader" :key="index">
-            <button
-              type="button"
-              class="btn btn-primary headervariable btn-sm"
-              draggable="true"
-              size="sm"
-              :id="index"
-            >{{ '{ ' + item + ' }'}}</button>
-          </div>
+          <button
+            v-for="(item, key,index) in csvheader"
+            :key="index"
+            type="button"
+            class="btn btn-primary headervariable btn-sm"
+            style="margin:0 5px 5px 0;"
+            draggable="true"
+            size="sm"
+            :id="index"
+          >{{ '{ ' + item + ' }'}}</button>
         </el-card>
       </div>
     </div>
