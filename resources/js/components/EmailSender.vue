@@ -9,13 +9,7 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <input type="file" name="File Upload" v-on:change="onFileChange" accept=".csv" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
               <el-input
-                class="aligntop"
                 type="text"
                 placeholder="Subject"
                 v-model="subject"
@@ -38,6 +32,7 @@
                 class="aligntop"
                 size="medium"
                 type="primary"
+                :loading="sendemailloading"
               >Send Email</el-button>
             </div>
           </div>
@@ -47,6 +42,14 @@
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>Variable Information</span>
+            <input
+              type="file"
+              ref="file"
+              name="File Upload"
+              v-on:change="onFileChange"
+              accept=".csv"
+              style="float: right; width:200px"
+            />
           </div>
           <div v-for="(item, key,index) in csvheader" :key="index">
             <button
@@ -93,7 +96,8 @@ export default {
       csvdetails: [],
       csvheader: [],
       newstringemail: [],
-      search: ""
+      search: "",
+      sendemailloading: false
     };
   },
   methods: {
@@ -102,6 +106,7 @@ export default {
       if (!files.length) return;
       this.file = files[0];
       this.getexcelfiledetails();
+      console.log(files[0]);
     },
     newtext() {
       this.newstringemail = [];
@@ -128,7 +133,21 @@ export default {
       }
     },
     getsmstext() {
-      this.newtext();
+      if (this.file == null) {
+        this.$notify({
+          title: "No CSV file selected!",
+          message: "Please select csv file first to proceed!",
+          type: "warning"
+        });
+        this.$nextTick(() => this.$refs.file.focus());
+      }
+      this.sendemailloading = true;
+      try {
+        this.newtext();
+        this.sendemailloading = false;
+      } catch (error) {
+        this.sendemailloading = false;
+      }
     },
     getexcelfileheader() {
       let vm = this;

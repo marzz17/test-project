@@ -3620,6 +3620,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailsender",
   data: function data() {
@@ -3630,7 +3633,8 @@ __webpack_require__.r(__webpack_exports__);
       csvdetails: [],
       csvheader: [],
       newstringemail: [],
-      search: ""
+      search: "",
+      sendemailloading: false
     };
   },
   methods: {
@@ -3639,6 +3643,7 @@ __webpack_require__.r(__webpack_exports__);
       if (!files.length) return;
       this.file = files[0];
       this.getexcelfiledetails();
+      console.log(files[0]);
     },
     newtext: function newtext() {
       var _this = this;
@@ -3672,7 +3677,27 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     getsmstext: function getsmstext() {
-      this.newtext();
+      var _this2 = this;
+
+      if (this.file == null) {
+        this.$notify({
+          title: "No CSV file selected!",
+          message: "Please select csv file first to proceed!",
+          type: "warning"
+        });
+        this.$nextTick(function () {
+          return _this2.$refs.file.focus();
+        });
+      }
+
+      this.sendemailloading = true;
+
+      try {
+        this.newtext();
+        this.sendemailloading = false;
+      } catch (error) {
+        this.sendemailloading = false;
+      }
     },
     getexcelfileheader: function getexcelfileheader() {
       var vm = this;
@@ -100391,21 +100416,11 @@ var render = function() {
             ),
             _vm._v(" "),
             _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-md-12" }, [
-                _c("input", {
-                  attrs: { type: "file", name: "File Upload", accept: ".csv" },
-                  on: { change: _vm.onFileChange }
-                })
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "row" }, [
               _c(
                 "div",
                 { staticClass: "col-md-12" },
                 [
                   _c("el-input", {
-                    staticClass: "aligntop",
                     attrs: {
                       type: "text",
                       placeholder: "Subject",
@@ -100444,7 +100459,11 @@ var render = function() {
                     "el-button",
                     {
                       staticClass: "aligntop",
-                      attrs: { size: "medium", type: "primary" },
+                      attrs: {
+                        size: "medium",
+                        type: "primary",
+                        loading: _vm.sendemailloading
+                      },
                       on: { click: _vm.getsmstext }
                     },
                     [_vm._v("Send Email")]
@@ -100473,7 +100492,20 @@ var render = function() {
                   attrs: { slot: "header" },
                   slot: "header"
                 },
-                [_c("span", [_vm._v("Variable Information")])]
+                [
+                  _c("span", [_vm._v("Variable Information")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    ref: "file",
+                    staticStyle: { float: "right", width: "200px" },
+                    attrs: {
+                      type: "file",
+                      name: "File Upload",
+                      accept: ".csv"
+                    },
+                    on: { change: _vm.onFileChange }
+                  })
+                ]
               ),
               _vm._v(" "),
               _vm._l(_vm.csvheader, function(item, key, index) {
