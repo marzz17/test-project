@@ -35,15 +35,15 @@
       <div class="col-md-4">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>Variable Information</span>
             <input
               type="file"
               ref="file"
               name="File Upload"
               v-on:change="onFileChange"
               accept=".csv"
-              style="float: right; width:200px"
+              style="float: left; width:200px"
             />
+            <span style="float: right;margin-top:4px;">Variable Information</span>
           </div>
           <button
             v-for="(item, key,index) in csvheader"

@@ -100488,18 +100488,22 @@ var render = function() {
                   slot: "header"
                 },
                 [
-                  _c("span", [_vm._v("Variable Information")]),
-                  _vm._v(" "),
                   _c("input", {
                     ref: "file",
-                    staticStyle: { float: "right", width: "200px" },
+                    staticStyle: { float: "left", width: "200px" },
                     attrs: {
                       type: "file",
                       name: "File Upload",
                       accept: ".csv"
                     },
                     on: { change: _vm.onFileChange }
-                  })
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "span",
+                    { staticStyle: { float: "right", "margin-top": "4px" } },
+                    [_vm._v("Variable Information")]
+                  )
                 ]
               ),
               _vm._v(" "),
