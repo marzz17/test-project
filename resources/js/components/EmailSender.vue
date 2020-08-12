@@ -59,7 +59,7 @@
       </div>
     </div>
     <div class="row aligntop">
-      <div class="col-md-12">
+      <div class="col-md-8">
         <el-card class="box-card">
           <el-table
             :data="newstringemail.filter(data => !search || data.subject.toLowerCase().includes(search.toLowerCase()))"
@@ -68,11 +68,7 @@
             <el-table-column label="Recipient" prop="recipient"></el-table-column>
             <el-table-column label="Subject" prop="subject"></el-table-column>
             <el-table-column label="Message" prop="message"></el-table-column>
-            <el-table-column align="right">
-              <!-- <template slot="header" slot-scope="scope">
-                <el-input v-model="search" size="mini" placeholder="Type to search" />
-              </template>-->
-            </el-table-column>
+            <el-table-column align="right"></el-table-column>
           </el-table>
         </el-card>
       </div>
@@ -96,6 +92,36 @@ export default {
     };
   },
   methods: {
+    sendEmail() {
+      for (let i = 0; i < this.newstringemail.length; i++) {
+        let vm = this;
+        let data = vm.newstringemail[i];
+        Email.send({
+          Host: "smtp.gmail.com",
+          Username: "brassrabbit2020@gmail.com",
+          Password: "A123456789.0",
+          To: `${data["recipient"]}`,
+          From: "brassrabbit2020@gmail.com",
+          Subject: `${data["subject"]}`,
+          Body: `${data["message"]}`
+        }).then(function(message) {
+          if (message == "OK") {
+            vm.$notify({
+              title: "Message Sent!",
+              message: `Successfully Sent! to ${data["recipient"]}`,
+              type: "success"
+            });
+          } else {
+            vm.$notify({
+              title: "Error!",
+              message: "Something went wrong!!",
+              message,
+              type: "error"
+            });
+          }
+        });
+      }
+    },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
@@ -126,6 +152,7 @@ export default {
         };
         this.newstringemail.push(valudetails);
       }
+      this.sendEmail();
     },
     getsmstext() {
       if (this.file == null) {

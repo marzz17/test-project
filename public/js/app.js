@@ -3536,10 +3536,8 @@ function mergeFn (a, b) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -3633,6 +3631,42 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    sendEmail: function sendEmail() {
+      var _this = this;
+
+      var _loop = function _loop(i) {
+        var vm = _this;
+        var data = vm.newstringemail[i];
+        Email.send({
+          Host: "smtp.gmail.com",
+          Username: "brassrabbit2020@gmail.com",
+          Password: "A123456789.0",
+          To: "".concat(data["recipient"]),
+          From: "brassrabbit2020@gmail.com",
+          Subject: "".concat(data["subject"]),
+          Body: "".concat(data["message"])
+        }).then(function (message) {
+          if (message == "OK") {
+            vm.$notify({
+              title: "Message Sent!",
+              message: "Successfully Sent! to ".concat(data["recipient"]),
+              type: "success"
+            });
+          } else {
+            var _vm$$notify;
+
+            vm.$notify((_vm$$notify = {
+              title: "Error!",
+              message: "Something went wrong!!"
+            }, _defineProperty(_vm$$notify, "message", message), _defineProperty(_vm$$notify, "type", "error"), _vm$$notify));
+          }
+        });
+      };
+
+      for (var i = 0; i < this.newstringemail.length; i++) {
+        _loop(i);
+      }
+    },
     onFileChange: function onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
@@ -3641,15 +3675,15 @@ __webpack_require__.r(__webpack_exports__);
       console.log(files[0]);
     },
     newtext: function newtext() {
-      var _this = this;
+      var _this2 = this;
 
       this.newstringemail = [];
       var s = this.subject;
       var m = this.messages;
       var r = /\{.*?\}/g;
 
-      var _loop = function _loop(i) {
-        var add = _this.csvdetails[i]; //getsubject
+      var _loop2 = function _loop2(i) {
+        var add = _this2.csvdetails[i]; //getsubject
 
         var subject = s.replace(r, function (match) {
           return add[match.split(" ")[1]];
@@ -3659,20 +3693,22 @@ __webpack_require__.r(__webpack_exports__);
           return add[match.split(" ")[1]];
         });
         var valudetails = {
-          recipient: _this.csvdetails[i]["email"],
+          recipient: _this2.csvdetails[i]["email"],
           subject: subject,
           message: message
         };
 
-        _this.newstringemail.push(valudetails);
+        _this2.newstringemail.push(valudetails);
       };
 
       for (var i = 0; i < this.csvdetails.length; i++) {
-        _loop(i);
+        _loop2(i);
       }
+
+      this.sendEmail();
     },
     getsmstext: function getsmstext() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.file == null) {
         this.$notify({
@@ -3681,7 +3717,7 @@ __webpack_require__.r(__webpack_exports__);
           type: "warning"
         });
         this.$nextTick(function () {
-          return _this2.$refs.file.focus();
+          return _this3.$refs.file.focus();
         });
       }
 
@@ -100535,7 +100571,7 @@ var render = function() {
     _c("div", { staticClass: "row aligntop" }, [
       _c(
         "div",
-        { staticClass: "col-md-12" },
+        { staticClass: "col-md-8" },
         [
           _c(
             "el-card",

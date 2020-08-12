@@ -33,5 +33,6 @@
     </div>
 </body>
 <script defer src="{{ asset('js/app.js') }}"></script>
+<script src="https://smtpjs.com/v3/smtp.js"></script>
 
 </html>
