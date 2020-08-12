@@ -68,7 +68,14 @@
             <el-table-column label="Recipient" prop="recipient"></el-table-column>
             <el-table-column label="Subject" prop="subject"></el-table-column>
             <el-table-column label="Message" prop="message"></el-table-column>
-            <el-table-column align="right"></el-table-column>
+            <el-table-column label="Status" prop="status">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === 'Sent' ? 'success' : 'warning'"
+                  disable-transitions
+                >{{scope.row.status}}</el-tag>
+              </template>
+            </el-table-column>
           </el-table>
         </el-card>
       </div>
@@ -106,12 +113,14 @@ export default {
           Body: `${data["message"]}`
         }).then(function(message) {
           if (message == "OK") {
+            vm.newstringemail[i]["status"] = "Sent";
             vm.$notify({
               title: "Message Sent!",
               message: `Successfully Sent! to ${data["recipient"]}`,
               type: "success"
             });
           } else {
+            vm.newstringemail[i]["status"] = "UnSent";
             vm.$notify({
               title: "Error!",
               message: "Something went wrong!!",
@@ -121,13 +130,15 @@ export default {
           }
         });
       }
+      setTimeout(() => {
+        this.sendemailloading = false;
+      }, 10000);
     },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
       this.file = files[0];
       this.getexcelfiledetails();
-      console.log(files[0]);
     },
     newtext() {
       this.newstringemail = [];
@@ -148,11 +159,21 @@ export default {
         let valudetails = {
           recipient: this.csvdetails[i]["email"],
           subject: subject,
-          message: message
+          message: message,
+          status: "Not Sent"
         };
         this.newstringemail.push(valudetails);
       }
-      this.sendEmail();
+      if (this.newstringemail.length > 0) {
+        this.sendEmail();
+      } else {
+        vm.$notify({
+          title: "No data to send!",
+          message: "Something went wrong!!",
+          message,
+          type: "error"
+        });
+      }
     },
     getsmstext() {
       if (this.file == null) {
@@ -166,7 +187,6 @@ export default {
       this.sendemailloading = true;
       try {
         this.newtext();
-        this.sendemailloading = false;
       } catch (error) {
         this.sendemailloading = false;
       }

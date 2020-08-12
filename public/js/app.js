@@ -3616,6 +3616,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailsender",
   data: function data() {
@@ -3647,6 +3654,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           Body: "".concat(data["message"])
         }).then(function (message) {
           if (message == "OK") {
+            vm.newstringemail[i]["status"] = "Sent";
             vm.$notify({
               title: "Message Sent!",
               message: "Successfully Sent! to ".concat(data["recipient"]),
@@ -3655,6 +3663,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           } else {
             var _vm$$notify;
 
+            vm.newstringemail[i]["status"] = "UnSent";
             vm.$notify((_vm$$notify = {
               title: "Error!",
               message: "Something went wrong!!"
@@ -3666,13 +3675,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       for (var i = 0; i < this.newstringemail.length; i++) {
         _loop(i);
       }
+
+      setTimeout(function () {
+        _this.sendemailloading = false;
+      }, 10000);
     },
     onFileChange: function onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
       this.file = files[0];
       this.getexcelfiledetails();
-      console.log(files[0]);
     },
     newtext: function newtext() {
       var _this2 = this;
@@ -3695,7 +3707,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var valudetails = {
           recipient: _this2.csvdetails[i]["email"],
           subject: subject,
-          message: message
+          message: message,
+          status: "Not Sent"
         };
 
         _this2.newstringemail.push(valudetails);
@@ -3705,7 +3718,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _loop2(i);
       }
 
-      this.sendEmail();
+      if (this.newstringemail.length > 0) {
+        this.sendEmail();
+      } else {
+        var _vm$$notify2;
+
+        vm.$notify((_vm$$notify2 = {
+          title: "No data to send!",
+          message: "Something went wrong!!"
+        }, _defineProperty(_vm$$notify2, "message", message), _defineProperty(_vm$$notify2, "type", "error"), _vm$$notify2));
+      }
     },
     getsmstext: function getsmstext() {
       var _this3 = this;
@@ -3725,7 +3747,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       try {
         this.newtext();
-        this.sendemailloading = false;
       } catch (error) {
         this.sendemailloading = false;
       }
@@ -100605,7 +100626,31 @@ var render = function() {
                     attrs: { label: "Message", prop: "message" }
                   }),
                   _vm._v(" "),
-                  _c("el-table-column", { attrs: { align: "right" } })
+                  _c("el-table-column", {
+                    attrs: { label: "Status", prop: "status" },
+                    scopedSlots: _vm._u([
+                      {
+                        key: "default",
+                        fn: function(scope) {
+                          return [
+                            _c(
+                              "el-tag",
+                              {
+                                attrs: {
+                                  type:
+                                    scope.row.status === "Sent"
+                                      ? "success"
+                                      : "warning",
+                                  "disable-transitions": ""
+                                }
+                              },
+                              [_vm._v(_vm._s(scope.row.status))]
+                            )
+                          ]
+                        }
+                      }
+                    ])
+                  })
                 ],
                 1
               )
