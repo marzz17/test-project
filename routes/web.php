@@ -18,3 +18,4 @@ Route::get('/', function () {
 });
 Route::post('createcontacttable', 'GlobalController@createcontactstable');
 Route::post('createcontacts', 'GlobalController@savecontacts');
+Route::get('getcontacts/{id}', 'GlobalController@getcontacts');

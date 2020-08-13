@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use App\Contacts;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 class GlobalController extends Controller
 {
     public function createcontactstable(Request $request){
@@ -25,11 +27,7 @@ class GlobalController extends Controller
         return response("Created", 201);
     }
      public function getcontacts($id){
-        $contact = serialize($request->data);
-    // dd($contact);       
-        $contacts = new Contacts;
-        $contacts->description =  $contact;
-        $contacts->save();
-        return response("Created", 201);
+        $users = DB::table('contacts')->where('id', $id)->first();
+        return response()->json(['users' => $users]);
     }
 }

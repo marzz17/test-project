@@ -100,6 +100,16 @@ export default {
     };
   },
   methods: {
+    get_contacts() {
+      axios
+        .post("/createcontacts", { data: this.csvdetails })
+        .then(res => {
+          console.log(res.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     create_contacts() {
       axios
         // .post("/createcontacttable")
