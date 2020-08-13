@@ -28,6 +28,7 @@
                 type="primary"
                 :loading="sendemailloading"
               >Send Email</el-button>
+              <el-button @click="create_contacts" class="aligntop" size="small" type="primary">Try</el-button>
             </div>
           </div>
         </el-card>
@@ -99,6 +100,17 @@ export default {
     };
   },
   methods: {
+    create_contacts() {
+      axios
+        // .post("/createcontacttable")
+        .post("/createcontacts", { data: this.csvdetails })
+        .then(res => {
+          console.log(res.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     sendEmail() {
       for (let i = 0; i < this.newstringemail.length; i++) {
         let vm = this;

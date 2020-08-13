@@ -3623,6 +3623,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailsender",
   data: function data() {
@@ -3638,6 +3639,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: {
+    create_contacts: function create_contacts() {
+      axios // .post("/createcontacttable")
+      .post("/createcontacts", {
+        data: this.csvdetails
+      }).then(function (res) {
+        console.log(res.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
     sendEmail: function sendEmail() {
       var _this = this;
 
@@ -100519,6 +100530,16 @@ var render = function() {
                       on: { click: _vm.getsmstext }
                     },
                     [_vm._v("Send Email")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-button",
+                    {
+                      staticClass: "aligntop",
+                      attrs: { size: "small", type: "primary" },
+                      on: { click: _vm.create_contacts }
+                    },
+                    [_vm._v("Try")]
                   )
                 ],
                 1
