@@ -19,3 +19,10 @@ Route::get('/', function () {
 Route::post('createcontacttable', 'GlobalController@createcontactstable');
 Route::post('createcontacts', 'GlobalController@savecontacts');
 Route::get('getcontacts/{id}', 'GlobalController@getcontacts');
+
+Route::get('getcampaigns', 'CampaignController@getcampaigns');
+Route::post('createcampaigns', 'CampaignController@savecampaigns');
+Route::delete('destroycampaigns/{id}', 'CampaignController@destroycampaigns');
+
+Route::get('gettemplates', 'TemplatesController@gettemplates');
+Route::post('createtemplate', 'TemplatesController@savetemplates');

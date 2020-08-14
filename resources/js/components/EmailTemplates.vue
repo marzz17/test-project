@@ -2,34 +2,45 @@
 <template>
   <div>
     <div class="row">
-      <div class="col-md-12">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>Campaign Information</span>
-          </div>
-          <campaign />
-        </el-card>
-      </div>
-    </div>
-    <div class="row aligntop">
-      <div class="col-md-12">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>Templates</span>
-          </div>
-          <emailtemplates />
-        </el-card>
-      </div>
-    </div>
-    <div class="row aligntop">
       <div class="col-md-8">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>New Message</span>
+            <span>New Templates</span>
           </div>
           <div class="row">
             <div class="col-md-12">
-              <el-input type="text" placeholder="Subject" v-model="subject" clearable size="mini" />
+              <el-input
+                class="aligntop"
+                type="text"
+                placeholder="Template Name"
+                v-model="template.templatename"
+                clearable
+                size="mini"
+              />
+              <el-select
+                class="aligntop"
+                v-model="template.campaign"
+                filterable
+                placeholder="Select Campaign"
+                no-data-text="No Data"
+                no-match-text="No data found!"
+                style="min-width:100%"
+              >
+                <el-option
+                  v-for="item in campaigns"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+              <el-input
+                class="aligntop"
+                type="text"
+                placeholder="Subject"
+                v-model="template.subject"
+                clearable
+                size="mini"
+              />
               <el-input
                 class="aligntop"
                 type="textarea"
@@ -37,7 +48,7 @@
                 maxlength="1500"
                 show-word-limit
                 placeholder="Compose Message"
-                v-model="messages"
+                v-model="template.messages"
                 size="mini"
               />
 
@@ -47,8 +58,19 @@
                 size="small"
                 type="primary"
                 :loading="sendemailloading"
-              >Send Email</el-button>
-              <el-button @click="get_contacts" class="aligntop" size="small" type="primary">Try</el-button>
+              >Test Result</el-button>
+              <el-button
+                @click="create_template"
+                class="aligntop"
+                size="small"
+                type="primary"
+              >Save Template</el-button>
+              <el-button
+                @click="get_contacts"
+                class="aligntop"
+                size="small"
+                type="primary"
+              >Get Contacts Use for this Template</el-button>
             </div>
           </div>
         </el-card>
@@ -106,20 +128,39 @@
 
 <script>
 export default {
-  name: "emailsender",
+  name: "emailtemplates",
   data() {
     return {
-      subject: "",
-      messages: "",
       file: null,
       csvdetails: [],
       csvheader: [],
       newstringemail: [],
       search: "",
-      sendemailloading: false
+      sendemailloading: false,
+      campaigns: [],
+      template: {
+        subject: "",
+        messages: "",
+        campaign: "",
+        templatename: "",
+        contacts_used: ""
+      }
     };
   },
+  created() {
+    this.getcampaigns();
+  },
   methods: {
+    getcampaigns() {
+      axios
+        .get("/getcampaigns")
+        .then(res => {
+          this.campaigns = res.data.campaigns;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     get_contacts() {
       axios
         .get("/getcontacts/" + 1)
@@ -128,6 +169,31 @@ export default {
           let g = res.data.contacts;
           let keys = Object.keys(g[0]);
           console.log("keys", keys);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    create_template() {
+      axios
+        .post("/createtemplate", {
+          data: this.csvdetails,
+          template: this.template
+        })
+        .then(res => {
+          if ((res.status = 201)) {
+            this.$notify({
+              title: "Success!",
+              message: `Successfully Save!`,
+              type: "success"
+            });
+          } else {
+            this.$notify({
+              title: "Error!",
+              message: "Something went wrong!!",
+              type: "error"
+            });
+          }
         })
         .catch(error => {
           console.log(error);
@@ -186,8 +252,8 @@ export default {
     },
     newtext() {
       this.newstringemail = [];
-      let s = this.subject;
-      let m = this.messages;
+      let s = this.template.subject;
+      let m = this.template.messages;
       let r = /\{.*?\}/g;
       for (let i = 0; i < this.csvdetails.length; i++) {
         const add = this.csvdetails[i];
@@ -208,16 +274,6 @@ export default {
         };
         this.newstringemail.push(valudetails);
       }
-      if (this.newstringemail.length > 0) {
-        this.sendEmail();
-      } else {
-        vm.$notify({
-          title: "No data to send!",
-          message: "Something went wrong!!",
-          message,
-          type: "error"
-        });
-      }
     },
     getsmstext() {
       if (this.file == null) {
@@ -231,6 +287,7 @@ export default {
       this.sendemailloading = true;
       try {
         this.newtext();
+        this.sendemailloading = false;
       } catch (error) {
         this.sendemailloading = false;
       }

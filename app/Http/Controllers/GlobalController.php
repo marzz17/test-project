@@ -22,12 +22,15 @@ class GlobalController extends Controller
     public function savecontacts(Request $request){
         $contact = serialize($request->data);    
         $contacts = new Contacts;
+        $contacts->name =  "sample";
         $contacts->description =  $contact;
         $contacts->save();
         return response("Created", 201);
     }
      public function getcontacts($id){
-        $users = DB::table('contacts')->where('id', $id)->first();
-        return response()->json(['users' => $users]);
+        $contacts = DB::table('contacts')->select(DB::raw('description'))->where('id','=', $id)->get();
+        $data = unserialize($contacts[0]->description);  
+        return response()->json(['contacts' => $data ]);
+        
     }
 }

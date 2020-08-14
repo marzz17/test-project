@@ -15,10 +15,13 @@ class CreateTemplates extends Migration
     {
         Schema::create('templates', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->string('subject');
             $table->string('message');
-            $table->integer('capaign_id')->unsigned();
-            $table->foreign('capaign_id')->references('id')->on('campaigns');
+            $table->integer('campaign_id')->unsigned();
+            $table->foreign('campaign_id')->references('id')->on('campaigns');
+            $table->integer('contact_id')->unsigned();
+            $table->foreign('contact_id')->references('id')->on('contacts');
             $table->timestamps();
         });
     }

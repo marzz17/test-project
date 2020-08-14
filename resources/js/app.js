@@ -27,6 +27,9 @@ Vue.use(VuePapaParse);
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('emailsender', require('./components/EmailSender.vue').default);
+Vue.component('campaign', require('./components/campaign.vue').default);
+Vue.component('emailtemplates', require('./components/EmailTemplates.vue').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
