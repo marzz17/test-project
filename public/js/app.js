@@ -3658,6 +3658,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailsender",
   data: function data() {
@@ -3795,19 +3804,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     getsmstext: function getsmstext() {
-      var _this5 = this;
-
-      if (this.file == null) {
-        this.$notify({
-          title: "No CSV file selected!",
-          message: "Please select csv file first to proceed!",
-          type: "warning"
-        });
-        this.$nextTick(function () {
-          return _this5.$refs.file.focus();
-        });
-      }
-
       this.sendemailloading = true;
 
       try {
@@ -3865,6 +3861,16 @@ document.addEventListener("dragstart", function (event) {
 __webpack_require__.r(__webpack_exports__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -4273,7 +4279,6 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.get("/getcampaigns").then(function (res) {
         _this.campaigns = res.data.campaigns;
-        console.log(_this.campaigns);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -101090,7 +101095,7 @@ var render = function() {
                   attrs: { slot: "header" },
                   slot: "header"
                 },
-                [_c("span", [_vm._v("Campaign Information")])]
+                [_c("span", [_vm._v("Campaign")])]
               ),
               _vm._v(" "),
               _c("campaign")
@@ -101216,17 +101221,34 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c(
-                    "el-button",
+                    "el-popconfirm",
                     {
-                      staticClass: "aligntop",
                       attrs: {
-                        size: "small",
-                        type: "primary",
-                        loading: _vm.sendemailloading
+                        confirmButtonText: "Send",
+                        cancelButtonText: "Cancel",
+                        icon: "el-icon-info",
+                        iconColor: "blue",
+                        title: "Are you sure to send this email?"
                       },
-                      on: { click: _vm.getsmstext }
+                      on: { onConfirm: _vm.getsmstext }
                     },
-                    [_vm._v("Send Email")]
+                    [
+                      _c(
+                        "el-button",
+                        {
+                          staticClass: "aligntop",
+                          attrs: {
+                            slot: "reference",
+                            size: "small",
+                            type: "primary",
+                            loading: _vm.sendemailloading
+                          },
+                          slot: "reference"
+                        },
+                        [_vm._v("Send Email")]
+                      )
+                    ],
+                    1
                   )
                 ],
                 1
@@ -101480,13 +101502,33 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c(
-                    "el-button",
+                    "el-popconfirm",
                     {
-                      staticClass: "aligntop",
-                      attrs: { size: "small", type: "primary" },
-                      on: { click: _vm.create_template }
+                      attrs: {
+                        confirmButtonText: "Save and proceed",
+                        cancelButtonText: "Cancel",
+                        icon: "el-icon-info",
+                        iconColor: "blue",
+                        title: "Are you sure to save this template?"
+                      },
+                      on: { onConfirm: _vm.create_template }
                     },
-                    [_vm._v("Save Template")]
+                    [
+                      _c(
+                        "el-button",
+                        {
+                          staticClass: "aligntop",
+                          attrs: {
+                            slot: "reference",
+                            size: "small",
+                            type: "primary"
+                          },
+                          slot: "reference"
+                        },
+                        [_vm._v("Save Template")]
+                      )
+                    ],
+                    1
                   ),
                   _vm._v(" "),
                   _c(

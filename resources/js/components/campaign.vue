@@ -38,7 +38,6 @@ export default {
         .get("/getcampaigns")
         .then(res => {
           this.campaigns = res.data.campaigns;
-          console.log(this.campaigns);
         })
         .catch(error => {
           console.log(error);

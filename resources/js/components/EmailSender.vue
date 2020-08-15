@@ -5,7 +5,7 @@
       <div class="col-md-12">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>Campaign Information</span>
+            <span>Campaign</span>
           </div>
           <campaign />
         </el-card>
@@ -64,13 +64,22 @@
                 size="mini"
               />
 
-              <el-button
-                @click="getsmstext"
-                class="aligntop"
-                size="small"
-                type="primary"
-                :loading="sendemailloading"
-              >Send Email</el-button>
+              <el-popconfirm
+                confirmButtonText="Send"
+                cancelButtonText="Cancel"
+                icon="el-icon-info"
+                iconColor="blue"
+                title="Are you sure to send this email?"
+                @onConfirm="getsmstext"
+              >
+                <el-button
+                  slot="reference"
+                  class="aligntop"
+                  size="small"
+                  type="primary"
+                  :loading="sendemailloading"
+                >Send Email</el-button>
+              </el-popconfirm>
             </div>
           </div>
         </el-card>
@@ -244,14 +253,6 @@ export default {
       }
     },
     getsmstext() {
-      if (this.file == null) {
-        this.$notify({
-          title: "No CSV file selected!",
-          message: "Please select csv file first to proceed!",
-          type: "warning"
-        });
-        this.$nextTick(() => this.$refs.file.focus());
-      }
       this.sendemailloading = true;
       try {
         this.newtext();

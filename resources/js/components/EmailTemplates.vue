@@ -51,12 +51,22 @@
                 v-model="template.messages"
                 size="mini"
               />
-              <el-button
-                @click="create_template"
-                class="aligntop"
-                size="small"
-                type="primary"
-              >Save Template</el-button>
+              <el-popconfirm
+                confirmButtonText="Save and proceed"
+                cancelButtonText="Cancel"
+                icon="el-icon-info"
+                iconColor="blue"
+                title="Are you sure to save this template?"
+                @onConfirm="create_template"
+              >
+                <el-button
+                  slot="reference"
+                  class="aligntop"
+                  size="small"
+                  type="primary"
+                >Save Template</el-button>
+              </el-popconfirm>
+
               <el-button
                 @click="getsmstext"
                 class="aligntop"
