@@ -3644,6 +3644,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailsender",
   data: function data() {
@@ -3655,34 +3669,45 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       csvheader: [],
       newstringemail: [],
       search: "",
-      sendemailloading: false
+      sendemailloading: false,
+      template: "",
+      templates: [],
+      templateused: []
     };
   },
+  created: function created() {
+    this.gettemplates();
+  },
   methods: {
-    get_contacts: function get_contacts() {
-      axios.get("/getcontacts/" + 1).then(function (res) {
-        console.log("new", res.data);
-        var g = res.data.contacts;
-        var keys = Object.keys(g[0]);
-        console.log("keys", keys);
+    gettemplates: function gettemplates() {
+      var _this = this;
+
+      axios.get("/gettemplates").then(function (res) {
+        _this.templates = res.data.templates;
       })["catch"](function (error) {
         console.log(error);
       });
     },
-    create_contacts: function create_contacts() {
-      axios.post("/createcontacts", {
-        data: this.csvdetails
-      }).then(function (res) {
-        console.log(res.data);
+    get_templateandcontacts: function get_templateandcontacts() {
+      var _this2 = this;
+
+      axios.get("/gettemplatesbyid/" + this.template).then(function (res) {
+        _this2.templateused = res.data.templates;
+        _this2.subject = _this2.templateused[0]["subject"];
+        _this2.messages = _this2.templateused[0]["message"];
+        _this2.csvdetails = res.data.contacts;
+        var g = res.data.contacts;
+        var keys = Object.keys(g[0]);
+        _this2.csvheader = keys;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     sendEmail: function sendEmail() {
-      var _this = this;
+      var _this3 = this;
 
       var _loop = function _loop(i) {
-        var vm = _this;
+        var vm = _this3;
         var data = vm.newstringemail[i];
         Email.send({
           Host: "smtp.gmail.com",
@@ -3717,7 +3742,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       setTimeout(function () {
-        _this.sendemailloading = false;
+        _this3.sendemailloading = false;
       }, 10000);
     },
     onFileChange: function onFileChange(e) {
@@ -3727,7 +3752,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.getexcelfiledetails();
     },
     newtext: function newtext() {
-      var _this2 = this;
+      var _this4 = this;
 
       this.newstringemail = [];
       var s = this.subject;
@@ -3735,7 +3760,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var r = /\{.*?\}/g;
 
       var _loop2 = function _loop2(i) {
-        var add = _this2.csvdetails[i]; //getsubject
+        var add = _this4.csvdetails[i]; //getsubject
 
         var subject = s.replace(r, function (match) {
           return add[match.split(" ")[1]];
@@ -3745,13 +3770,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return add[match.split(" ")[1]];
         });
         var valudetails = {
-          recipient: _this2.csvdetails[i]["email"],
+          recipient: _this4.csvdetails[i]["email"],
           subject: subject,
           message: message,
           status: "Not Sent"
         };
 
-        _this2.newstringemail.push(valudetails);
+        _this4.newstringemail.push(valudetails);
       };
 
       for (var i = 0; i < this.csvdetails.length; i++) {
@@ -3770,7 +3795,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     getsmstext: function getsmstext() {
-      var _this3 = this;
+      var _this5 = this;
 
       if (this.file == null) {
         this.$notify({
@@ -3779,7 +3804,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           type: "warning"
         });
         this.$nextTick(function () {
-          return _this3.$refs.file.focus();
+          return _this5.$refs.file.focus();
         });
       }
 
@@ -3961,13 +3986,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "emailtemplates",
   data: function data() {
@@ -3997,16 +4015,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       axios.get("/getcampaigns").then(function (res) {
         _this.campaigns = res.data.campaigns;
-      })["catch"](function (error) {
-        console.log(error);
-      });
-    },
-    get_contacts: function get_contacts() {
-      axios.get("/getcontacts/" + 1).then(function (res) {
-        console.log("new", res.data);
-        var g = res.data.contacts;
-        var keys = Object.keys(g[0]);
-        console.log("keys", keys);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -101143,7 +101151,36 @@ var render = function() {
                 "div",
                 { staticClass: "col-md-12" },
                 [
+                  _c(
+                    "el-select",
+                    {
+                      staticStyle: { "min-width": "100%" },
+                      attrs: {
+                        filterable: "",
+                        placeholder: "Select Template",
+                        "no-data-text": "No Data",
+                        "no-match-text": "No data found!"
+                      },
+                      on: { change: _vm.get_templateandcontacts },
+                      model: {
+                        value: _vm.template,
+                        callback: function($$v) {
+                          _vm.template = $$v
+                        },
+                        expression: "template"
+                      }
+                    },
+                    _vm._l(_vm.templates, function(item) {
+                      return _c("el-option", {
+                        key: item.id,
+                        attrs: { label: item.name, value: item.id }
+                      })
+                    }),
+                    1
+                  ),
+                  _vm._v(" "),
                   _c("el-input", {
+                    staticClass: "aligntop",
                     attrs: {
                       type: "text",
                       placeholder: "Subject",
@@ -101190,16 +101227,6 @@ var render = function() {
                       on: { click: _vm.getsmstext }
                     },
                     [_vm._v("Send Email")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-button",
-                    {
-                      staticClass: "aligntop",
-                      attrs: { size: "small", type: "primary" },
-                      on: { click: _vm.get_contacts }
-                    },
-                    [_vm._v("Try")]
                   )
                 ],
                 1
@@ -101225,24 +101252,7 @@ var render = function() {
                   attrs: { slot: "header" },
                   slot: "header"
                 },
-                [
-                  _c("input", {
-                    ref: "file",
-                    staticStyle: { float: "left", width: "200px" },
-                    attrs: {
-                      type: "file",
-                      name: "File Upload",
-                      accept: ".csv"
-                    },
-                    on: { change: _vm.onFileChange }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    { staticStyle: { float: "right", "margin-top": "4px" } },
-                    [_vm._v("Variable Information")]
-                  )
-                ]
+                [_c("span", [_vm._v("Variable Template Used Information")])]
               ),
               _vm._v(" "),
               _vm._l(_vm.csvheader, function(item, key, index) {
@@ -101473,20 +101483,6 @@ var render = function() {
                     "el-button",
                     {
                       staticClass: "aligntop",
-                      attrs: {
-                        size: "small",
-                        type: "primary",
-                        loading: _vm.sendemailloading
-                      },
-                      on: { click: _vm.getsmstext }
-                    },
-                    [_vm._v("Test Result")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-button",
-                    {
-                      staticClass: "aligntop",
                       attrs: { size: "small", type: "primary" },
                       on: { click: _vm.create_template }
                     },
@@ -101497,10 +101493,14 @@ var render = function() {
                     "el-button",
                     {
                       staticClass: "aligntop",
-                      attrs: { size: "small", type: "primary" },
-                      on: { click: _vm.get_contacts }
+                      attrs: {
+                        size: "small",
+                        type: "primary",
+                        loading: _vm.sendemailloading
+                      },
+                      on: { click: _vm.getsmstext }
                     },
-                    [_vm._v("Get Contacts Use for this Template")]
+                    [_vm._v("Test Result")]
                   )
                 ],
                 1

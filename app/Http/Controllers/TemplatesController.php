@@ -12,11 +12,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 class TemplatesController extends Controller
 {
-      public function gettemplates(){
-       $templates = DB::table('templates')
-            ->join('campaigns', 'templates.campaign_id', '=', 'campaigns.id')
-            ->select('templates.id, templates.name','templates.subject','templates.message','templates.campaign_id','campaigns.name as campaign_name')
-            ->get();
+    public function gettemplatesbyid($id){
+        $templates = DB::table('templates')->where('id','=', $id)->get();
+        $contacts = DB::table('contacts')->select(DB::raw('description'))->where('id','=', $templates[0]->contact_id)->get();
+        $data = unserialize($contacts[0]->description); 
+    return response()->json(['templates' => $templates, 'contacts' => $data ]);
+        
+    }
+     public function gettemplates(){
+       $templates = DB::table('templates')->get();
         return response()->json(['templates' => $templates ]);
         
     }

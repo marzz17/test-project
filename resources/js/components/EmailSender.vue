@@ -29,7 +29,30 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <el-input type="text" placeholder="Subject" v-model="subject" clearable size="mini" />
+              <el-select
+                v-model="template"
+                filterable
+                placeholder="Select Template"
+                no-data-text="No Data"
+                no-match-text="No data found!"
+                style="min-width:100%"
+                @change="get_templateandcontacts"
+              >
+                <el-option
+                  v-for="item in templates"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+              <el-input
+                type="text"
+                class="aligntop"
+                placeholder="Subject"
+                v-model="subject"
+                clearable
+                size="mini"
+              />
               <el-input
                 class="aligntop"
                 type="textarea"
@@ -48,7 +71,6 @@
                 type="primary"
                 :loading="sendemailloading"
               >Send Email</el-button>
-              <el-button @click="get_contacts" class="aligntop" size="small" type="primary">Try</el-button>
             </div>
           </div>
         </el-card>
@@ -56,15 +78,7 @@
       <div class="col-md-4">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <input
-              type="file"
-              ref="file"
-              name="File Upload"
-              v-on:change="onFileChange"
-              accept=".csv"
-              style="float: left; width:200px"
-            />
-            <span style="float: right;margin-top:4px;">Variable Information</span>
+            <span>Variable Template Used Information</span>
           </div>
           <button
             v-for="(item, key,index) in csvheader"
@@ -116,33 +130,43 @@ export default {
       csvheader: [],
       newstringemail: [],
       search: "",
-      sendemailloading: false
+      sendemailloading: false,
+      template: "",
+      templates: [],
+      templateused: []
     };
   },
+  created() {
+    this.gettemplates();
+  },
   methods: {
-    get_contacts() {
+    gettemplates() {
       axios
-        .get("/getcontacts/" + 1)
+        .get("/gettemplates")
         .then(res => {
-          console.log("new", res.data);
+          this.templates = res.data.templates;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    get_templateandcontacts() {
+      axios
+        .get("/gettemplatesbyid/" + this.template)
+        .then(res => {
+          this.templateused = res.data.templates;
+          this.subject = this.templateused[0]["subject"];
+          this.messages = this.templateused[0]["message"];
+          this.csvdetails = res.data.contacts;
           let g = res.data.contacts;
           let keys = Object.keys(g[0]);
-          console.log("keys", keys);
+          this.csvheader = keys;
         })
         .catch(error => {
           console.log(error);
         });
     },
-    create_contacts() {
-      axios
-        .post("/createcontacts", { data: this.csvdetails })
-        .then(res => {
-          console.log(res.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
+
     sendEmail() {
       for (let i = 0; i < this.newstringemail.length; i++) {
         let vm = this;

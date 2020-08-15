@@ -51,14 +51,6 @@
                 v-model="template.messages"
                 size="mini"
               />
-
-              <el-button
-                @click="getsmstext"
-                class="aligntop"
-                size="small"
-                type="primary"
-                :loading="sendemailloading"
-              >Test Result</el-button>
               <el-button
                 @click="create_template"
                 class="aligntop"
@@ -66,11 +58,12 @@
                 type="primary"
               >Save Template</el-button>
               <el-button
-                @click="get_contacts"
+                @click="getsmstext"
                 class="aligntop"
                 size="small"
                 type="primary"
-              >Get Contacts Use for this Template</el-button>
+                :loading="sendemailloading"
+              >Test Result</el-button>
             </div>
           </div>
         </el-card>
@@ -156,19 +149,6 @@ export default {
         .get("/getcampaigns")
         .then(res => {
           this.campaigns = res.data.campaigns;
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    get_contacts() {
-      axios
-        .get("/getcontacts/" + 1)
-        .then(res => {
-          console.log("new", res.data);
-          let g = res.data.contacts;
-          let keys = Object.keys(g[0]);
-          console.log("keys", keys);
         })
         .catch(error => {
           console.log(error);
