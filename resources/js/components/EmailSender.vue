@@ -231,9 +231,10 @@ export default {
           }
         });
       }
-      this.createdeliveries();
+
       setTimeout(() => {
         this.sendemailloading = false;
+        this.createdeliveries();
       }, 1000);
     },
     onFileChange(e) {

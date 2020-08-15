@@ -3775,9 +3775,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _loop(i);
       }
 
-      this.createdeliveries();
       setTimeout(function () {
         _this4.sendemailloading = false;
+
+        _this4.createdeliveries();
       }, 1000);
     },
     onFileChange: function onFileChange(e) {
