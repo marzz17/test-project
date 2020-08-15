@@ -22,6 +22,7 @@ class CreateDeliveries extends Migration
             $table->foreign('contacts_id')->references('id')->on('contacts');
             $table->integer('template_id')->unsigned();
             $table->foreign('template_id')->references('id')->on('templates');
+            $table->string('status');
             $table->timestamps();
         });
     }

@@ -199,41 +199,7 @@ export default {
           console.log(error);
         });
     },
-    sendEmail() {
-      for (let i = 0; i < this.newstringemail.length; i++) {
-        let vm = this;
-        let data = vm.newstringemail[i];
-        Email.send({
-          Host: "smtp.gmail.com",
-          Username: "brassrabbit2020@gmail.com",
-          Password: "A123456789.0",
-          To: `${data["recipient"]}`,
-          From: "brassrabbit2020@gmail.com",
-          Subject: `${data["subject"]}`,
-          Body: `${data["message"]}`
-        }).then(function(message) {
-          if (message == "OK") {
-            vm.newstringemail[i]["status"] = "Sent";
-            vm.$notify({
-              title: "Message Sent!",
-              message: `Successfully Sent! to ${data["recipient"]}`,
-              type: "success"
-            });
-          } else {
-            vm.newstringemail[i]["status"] = "UnSent";
-            vm.$notify({
-              title: "Error!",
-              message: "Something went wrong!!",
-              message,
-              type: "error"
-            });
-          }
-        });
-      }
-      setTimeout(() => {
-        this.sendemailloading = false;
-      }, 10000);
-    },
+
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;

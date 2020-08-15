@@ -142,13 +142,36 @@ export default {
       sendemailloading: false,
       template: "",
       templates: [],
-      templateused: []
+      templateused: [],
+      templateidused: ""
     };
   },
   created() {
     this.gettemplates();
   },
   methods: {
+    createdeliveries() {
+      axios
+        .post("/createtdelivery", { data: this.newstringemail })
+        .then(res => {
+          if ((res.status = 201)) {
+            this.$notify({
+              title: "Success!",
+              message: `Successfully Save Delivery!`,
+              type: "success"
+            });
+          } else {
+            this.$notify({
+              title: "Error!",
+              message: "Something went wrong!!",
+              type: "error"
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     gettemplates() {
       axios
         .get("/gettemplates")
@@ -164,6 +187,7 @@ export default {
         .get("/gettemplatesbyid/" + this.template)
         .then(res => {
           this.templateused = res.data.templates;
+          this.templateidused = this.templateused[0]["contact_id"];
           this.subject = this.templateused[0]["subject"];
           this.messages = this.templateused[0]["message"];
           this.csvdetails = res.data.contacts;
@@ -207,9 +231,10 @@ export default {
           }
         });
       }
+      this.createdeliveries();
       setTimeout(() => {
         this.sendemailloading = false;
-      }, 10000);
+      }, 1000);
     },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
@@ -237,7 +262,9 @@ export default {
           recipient: this.csvdetails[i]["email"],
           subject: subject,
           message: message,
-          status: "Not Sent"
+          status: "Not Sent",
+          template: this.template,
+          contact: this.templateidused
         };
         this.newstringemail.push(valudetails);
       }

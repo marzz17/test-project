@@ -30,6 +30,7 @@
         <div class="content">
             <emailsender></emailsender>
         </div>
+
     </div>
 </body>
 <script defer src="{{ asset('js/app.js') }}"></script>

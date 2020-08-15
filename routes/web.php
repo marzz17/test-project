@@ -27,3 +27,5 @@ Route::delete('destroycampaigns/{id}', 'CampaignController@destroycampaigns');
 Route::get('gettemplates', 'TemplatesController@gettemplates');
 Route::post('createtemplate', 'TemplatesController@savetemplates');
 Route::get('gettemplatesbyid/{id}', 'TemplatesController@gettemplatesbyid');
+
+Route::post('createtdelivery', 'DeliveriesController@savedeliveries');

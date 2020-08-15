@@ -3681,42 +3681,67 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sendemailloading: false,
       template: "",
       templates: [],
-      templateused: []
+      templateused: [],
+      templateidused: ""
     };
   },
   created: function created() {
     this.gettemplates();
   },
   methods: {
-    gettemplates: function gettemplates() {
+    createdeliveries: function createdeliveries() {
       var _this = this;
 
+      axios.post("/createtdelivery", {
+        data: this.newstringemail
+      }).then(function (res) {
+        if (res.status = 201) {
+          _this.$notify({
+            title: "Success!",
+            message: "Successfully Save Delivery!",
+            type: "success"
+          });
+        } else {
+          _this.$notify({
+            title: "Error!",
+            message: "Something went wrong!!",
+            type: "error"
+          });
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    gettemplates: function gettemplates() {
+      var _this2 = this;
+
       axios.get("/gettemplates").then(function (res) {
-        _this.templates = res.data.templates;
+        _this2.templates = res.data.templates;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     get_templateandcontacts: function get_templateandcontacts() {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.get("/gettemplatesbyid/" + this.template).then(function (res) {
-        _this2.templateused = res.data.templates;
-        _this2.subject = _this2.templateused[0]["subject"];
-        _this2.messages = _this2.templateused[0]["message"];
-        _this2.csvdetails = res.data.contacts;
+        _this3.templateused = res.data.templates;
+        _this3.templateidused = _this3.templateused[0]["contact_id"];
+        _this3.subject = _this3.templateused[0]["subject"];
+        _this3.messages = _this3.templateused[0]["message"];
+        _this3.csvdetails = res.data.contacts;
         var g = res.data.contacts;
         var keys = Object.keys(g[0]);
-        _this2.csvheader = keys;
+        _this3.csvheader = keys;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     sendEmail: function sendEmail() {
-      var _this3 = this;
+      var _this4 = this;
 
       var _loop = function _loop(i) {
-        var vm = _this3;
+        var vm = _this4;
         var data = vm.newstringemail[i];
         Email.send({
           Host: "smtp.gmail.com",
@@ -3750,9 +3775,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _loop(i);
       }
 
+      this.createdeliveries();
       setTimeout(function () {
-        _this3.sendemailloading = false;
-      }, 10000);
+        _this4.sendemailloading = false;
+      }, 1000);
     },
     onFileChange: function onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
@@ -3761,7 +3787,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.getexcelfiledetails();
     },
     newtext: function newtext() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.newstringemail = [];
       var s = this.subject;
@@ -3769,7 +3795,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var r = /\{.*?\}/g;
 
       var _loop2 = function _loop2(i) {
-        var add = _this4.csvdetails[i]; //getsubject
+        var add = _this5.csvdetails[i]; //getsubject
 
         var subject = s.replace(r, function (match) {
           return add[match.split(" ")[1]];
@@ -3779,13 +3805,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return add[match.split(" ")[1]];
         });
         var valudetails = {
-          recipient: _this4.csvdetails[i]["email"],
+          recipient: _this5.csvdetails[i]["email"],
           subject: subject,
           message: message,
-          status: "Not Sent"
+          status: "Not Sent",
+          template: _this5.template,
+          contact: _this5.templateidused
         };
 
-        _this4.newstringemail.push(valudetails);
+        _this5.newstringemail.push(valudetails);
       };
 
       for (var i = 0; i < this.csvdetails.length; i++) {
@@ -3859,8 +3887,6 @@ document.addEventListener("dragstart", function (event) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -4058,48 +4084,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         console.log(error);
       });
     },
-    sendEmail: function sendEmail() {
-      var _this3 = this;
-
-      var _loop = function _loop(i) {
-        var vm = _this3;
-        var data = vm.newstringemail[i];
-        Email.send({
-          Host: "smtp.gmail.com",
-          Username: "brassrabbit2020@gmail.com",
-          Password: "A123456789.0",
-          To: "".concat(data["recipient"]),
-          From: "brassrabbit2020@gmail.com",
-          Subject: "".concat(data["subject"]),
-          Body: "".concat(data["message"])
-        }).then(function (message) {
-          if (message == "OK") {
-            vm.newstringemail[i]["status"] = "Sent";
-            vm.$notify({
-              title: "Message Sent!",
-              message: "Successfully Sent! to ".concat(data["recipient"]),
-              type: "success"
-            });
-          } else {
-            var _vm$$notify;
-
-            vm.newstringemail[i]["status"] = "UnSent";
-            vm.$notify((_vm$$notify = {
-              title: "Error!",
-              message: "Something went wrong!!"
-            }, _defineProperty(_vm$$notify, "message", message), _defineProperty(_vm$$notify, "type", "error"), _vm$$notify));
-          }
-        });
-      };
-
-      for (var i = 0; i < this.newstringemail.length; i++) {
-        _loop(i);
-      }
-
-      setTimeout(function () {
-        _this3.sendemailloading = false;
-      }, 10000);
-    },
     onFileChange: function onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
@@ -4107,15 +4091,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.getexcelfiledetails();
     },
     newtext: function newtext() {
-      var _this4 = this;
+      var _this3 = this;
 
       this.newstringemail = [];
       var s = this.template.subject;
       var m = this.template.messages;
       var r = /\{.*?\}/g;
 
-      var _loop2 = function _loop2(i) {
-        var add = _this4.csvdetails[i]; //getsubject
+      var _loop = function _loop(i) {
+        var add = _this3.csvdetails[i]; //getsubject
 
         var subject = s.replace(r, function (match) {
           return add[match.split(" ")[1]];
@@ -4125,21 +4109,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return add[match.split(" ")[1]];
         });
         var valudetails = {
-          recipient: _this4.csvdetails[i]["email"],
+          recipient: _this3.csvdetails[i]["email"],
           subject: subject,
           message: message,
           status: "Not Sent"
         };
 
-        _this4.newstringemail.push(valudetails);
+        _this3.newstringemail.push(valudetails);
       };
 
       for (var i = 0; i < this.csvdetails.length; i++) {
-        _loop2(i);
+        _loop(i);
       }
     },
     getsmstext: function getsmstext() {
-      var _this5 = this;
+      var _this4 = this;
 
       if (this.file == null) {
         this.$notify({
@@ -4148,7 +4132,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           type: "warning"
         });
         this.$nextTick(function () {
-          return _this5.$refs.file.focus();
+          return _this4.$refs.file.focus();
         });
       }
 
